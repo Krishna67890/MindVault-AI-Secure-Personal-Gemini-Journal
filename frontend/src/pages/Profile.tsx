@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useAuth } from '../contexts/AuthContext';
 import { User as UserIcon, Camera, Save, CheckCircle, Shield, Sparkles, BookText, MessageSquare, Award, Link as LinkIcon, Heart } from 'lucide-react';
 import api from '../services/api';
-import developerPhoto from '../../../Assets/Devloper.jpg';
+import developerPhoto from '../assets/Devloper.jpg';
 
 const PRESET_AVATARS = [
   { id: 'developer', name: 'Developer Logo', src: developerPhoto },

@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Outlet, Link, useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import { useTheme } from '../contexts/ThemeContext';
-import developerPhoto from '../../../Assets/Devloper.jpg';
+import developerPhoto from '../assets/Devloper.jpg';
 import {
   LayoutDashboard,
   MessageSquare,

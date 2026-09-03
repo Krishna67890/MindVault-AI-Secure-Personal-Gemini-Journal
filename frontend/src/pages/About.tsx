@@ -1,6 +1,6 @@
 import React from 'react';
 import { Shield, Brain, Zap, Code, Heart, Sparkles, Globe, User } from 'lucide-react';
-import developerPhoto from '../../../Assets/Devloper.jpg';
+import developerPhoto from '../assets/Devloper.jpg';
 
 const About: React.FC = () => {
   return (
