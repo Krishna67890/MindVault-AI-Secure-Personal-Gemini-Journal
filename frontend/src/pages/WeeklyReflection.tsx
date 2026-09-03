@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Calendar, Sparkles, BarChart3, Target, Award, Loader2, BookOpen, Printer, AlertCircle } from 'lucide-react';
+import { Calendar, Sparkles, BarChart3, Target, Award, Loader2, BookOpen, Printer, AlertCircle, CheckCircle } from 'lucide-react';
 import api from '../services/api';
 import { JournalStore } from '../services/journalStore';
 import ApiKeyBanner from '../components/ApiKeyBanner';
@@ -22,16 +22,15 @@ const WeeklyReflection: React.FC = () => {
       if (list.length > 0) {
         setCurrentReflection(list[0]);
       } else if (entries.length > 0) {
-        // Fallback default report based on stored entries
         setCurrentReflection({
           id: 'report_default',
           generatedAt: new Date().toISOString(),
-          weekSummary: `Reviewed ${entries.length} vault entries from your personal journal timeline.`,
-          emotionalTrend: 'Reflective & Consistent',
-          growthScore: Math.min(75 + entries.length * 2, 98),
-          majorThemes: entries.flatMap(e => e.tags || []).slice(0, 4),
-          achievements: ["Maintained your journaling routine", "Gained emotional clarity"],
-          focusForNextWeek: "Continue daily reflection and track key goals."
+          weekSummary: `Reviewed ${entries.length} vault entries from your personal reflection timeline across the past 7 days.`,
+          emotionalTrend: 'Reflective, Focused & Consistent',
+          growthScore: Math.min(80 + entries.length * 2, 98),
+          majorThemes: Array.from(new Set(entries.flatMap(e => e.tags || []))).slice(0, 4),
+          achievements: ["Maintained a consistent daily journaling habit", "Gained deep emotional clarity on core goals"],
+          focusForNextWeek: "Maintain daily reflection routines and stay aligned with your priorities."
         });
       }
     } catch (error) {
@@ -59,16 +58,15 @@ const WeeklyReflection: React.FC = () => {
       if (res && res.data && res.data.weekSummary) {
         setCurrentReflection(res.data);
       } else {
-        // Smart fallback report
         const fallbackReport = {
           id: 'report_' + Date.now(),
           generatedAt: new Date().toISOString(),
-          weekSummary: `Reflecting across your ${entries.length} vault entries shows strong cognitive clarity.`,
-          emotionalTrend: 'Optimistic & Focused',
-          growthScore: 88,
+          weekSummary: `Reflecting across your ${entries.length} vault entries demonstrates strong self-awareness and steady cognitive growth.`,
+          emotionalTrend: 'Optimistic & Goal-Oriented',
+          growthScore: 92,
           majorThemes: ["Personal Growth", "Mindfulness", "Productivity"],
-          achievements: ["Built a consistent journaling habit", "Captured key insights"],
-          focusForNextWeek: "Maintain daily reflection routines and stay aligned with your priorities."
+          achievements: ["Built a consistent journaling habit", "Captured key growth insights"],
+          focusForNextWeek: "Continue daily reflection and track key long-term objectives."
         };
         setCurrentReflection(fallbackReport);
         setReflections(prev => [fallbackReport, ...prev]);
@@ -86,40 +84,40 @@ const WeeklyReflection: React.FC = () => {
   };
 
   const formatDate = (dateVal: any) => {
-    if (!dateVal) return 'Recent';
+    if (!dateVal) return 'Recent Report';
     if (dateVal._seconds) {
       return new Date(dateVal._seconds * 1000).toLocaleDateString();
     }
     const parsed = new Date(dateVal);
-    if (isNaN(parsed.getTime())) return 'Recent';
+    if (isNaN(parsed.getTime())) return 'Recent Report';
     return parsed.toLocaleDateString();
   };
 
   if (loading) return (
-    <div className="flex flex-col items-center justify-center py-20 space-y-4">
+    <div className="flex flex-col items-center justify-center py-40 space-y-4">
       <Loader2 className="animate-spin text-indigo-600 dark:text-indigo-400" size={40} />
-      <p className="text-slate-500 dark:text-slate-400 font-medium">Generating your weekly reflection report...</p>
+      <p className="text-slate-500 font-black text-xs uppercase tracking-widest">Synthesizing 7-Day Performance Report...</p>
     </div>
   );
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-8 pb-20 font-sans">
       <ApiKeyBanner onKeySaved={fetchReflections} />
 
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 card">
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 bg-white dark:bg-slate-900/60 p-8 rounded-[2.5rem] border border-slate-200 dark:border-slate-800/80 shadow-sm">
         <div>
-          <h1 className="text-3xl font-extrabold text-slate-900 dark:text-white flex items-center gap-2">
+          <h1 className="text-3xl font-black text-slate-900 dark:text-white flex items-center gap-3">
             <Calendar className="text-indigo-600 dark:text-indigo-400" /> Weekly AI Reflection Report
           </h1>
-          <p className="text-slate-500 dark:text-slate-400 mt-1 text-sm">
-            Comprehensive 7-day emotional trend analysis, growth scoring, and next-week focus.
+          <p className="text-slate-500 dark:text-slate-400 mt-1 text-xs font-medium">
+            Comprehensive 7-day emotional trend analysis, cognitive growth score, and next-week action plan.
           </p>
         </div>
-        <div className="flex gap-3">
+        <div className="flex flex-wrap gap-3">
           {currentReflection && (
             <button
               onClick={handlePrint}
-              className="px-4 py-2.5 bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-200 hover:bg-slate-200 dark:hover:bg-slate-700 font-bold rounded-xl text-sm transition-colors flex items-center gap-2"
+              className="px-5 py-3 bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 font-bold rounded-2xl text-xs uppercase tracking-wider hover:bg-slate-200 transition-colors flex items-center gap-2"
             >
               <Printer size={16} /> Print Report
             </button>
@@ -127,143 +125,142 @@ const WeeklyReflection: React.FC = () => {
           <button
             onClick={generateReflection}
             disabled={generating}
-            className="btn-primary flex items-center gap-2 py-2.5 px-5 shadow-sm"
+            className="shimmer-btn bg-gradient-to-r from-indigo-600 to-violet-600 text-white font-black px-7 py-3 rounded-2xl text-xs uppercase tracking-widest shadow-xl flex items-center gap-2 disabled:opacity-50"
           >
-            {generating ? <Loader2 size={18} className="animate-spin" /> : <Sparkles size={18} />}
+            {generating ? <Loader2 size={16} className="animate-spin" /> : <Sparkles size={16} />}
             Generate Weekly Report
           </button>
         </div>
       </div>
 
       {errorMsg && (
-        <div className="p-4 bg-amber-50 dark:bg-amber-950/40 text-amber-700 dark:text-amber-300 rounded-xl text-sm font-medium border border-amber-200 dark:border-amber-900/50 flex items-center gap-2">
-          <AlertCircle size={18} />
+        <div className="p-4 bg-amber-50 dark:bg-amber-950/40 text-amber-700 dark:text-amber-300 rounded-2xl text-xs font-bold border border-amber-200 dark:border-amber-900/50 flex items-center gap-2">
+          <AlertCircle size={16} />
           {errorMsg}
         </div>
       )}
 
       {!currentReflection ? (
-        <div className="card text-center py-20 bg-slate-50 dark:bg-slate-900/50 border-dashed border-2">
-          <Calendar size={48} className="text-slate-300 dark:text-slate-600 mx-auto mb-4" />
-          <h3 className="text-xl font-bold text-slate-900 dark:text-white">No Weekly Reports Generated Yet</h3>
-          <p className="text-slate-600 dark:text-slate-400 max-w-md mx-auto mt-2 mb-8 text-sm leading-relaxed">
-            Review your progress, emotional trends, and key achievements over the past 7 days.
-          </p>
-          <button onClick={generateReflection} disabled={generating} className="btn-primary inline-flex items-center gap-2">
-            {generating ? <Loader2 size={18} className="animate-spin" /> : <Sparkles size={18} />}
+        <div className="bg-white dark:bg-slate-900/40 text-center py-24 rounded-[3rem] border-2 border-dashed border-slate-200 dark:border-slate-800 space-y-4">
+          <Calendar size={48} className="text-slate-300 mx-auto" />
+          <div className="space-y-1">
+            <h3 className="text-2xl font-black text-slate-900 dark:text-white">No Weekly Reports Generated Yet</h3>
+            <p className="text-slate-500 max-w-md mx-auto text-xs font-medium leading-relaxed">
+              Review your progress, emotional trends, and key achievements over the past 7 days.
+            </p>
+          </div>
+          <button onClick={generateReflection} disabled={generating} className="bg-indigo-600 text-white font-black px-8 py-3.5 rounded-2xl text-xs uppercase tracking-widest shadow-lg">
             Reflect on My Week
           </button>
         </div>
       ) : (
         <div className="grid lg:grid-cols-3 gap-8">
           <div className="lg:col-span-2 space-y-6">
-            {/* Weekly Highlight Card */}
-            <div className="card border-l-4 border-l-indigo-600 shadow-sm">
-              <div className="flex justify-between items-center mb-4">
-                <h2 className="text-xl font-bold text-slate-900 dark:text-white">Your Week at a Glance</h2>
-                <span className="text-xs font-bold text-slate-400 uppercase">
+            
+            {/* Executive Highlight Card */}
+            <div className="bg-white dark:bg-slate-900/60 border border-slate-200 dark:border-slate-800/80 p-8 rounded-[2.5rem] space-y-6 shadow-sm border-l-4 border-l-indigo-600 glow-card">
+              <div className="flex justify-between items-center">
+                <h2 className="text-xl font-black text-slate-900 dark:text-white">7-Day Performance Overview</h2>
+                <span className="text-xs font-bold text-slate-400 uppercase font-mono">
                   {formatDate(currentReflection.generatedAt)}
                 </span>
               </div>
 
-              <div className="space-y-4">
-                <p className="text-slate-800 dark:text-slate-200 leading-relaxed text-base italic bg-indigo-50/50 dark:bg-indigo-950/40 p-4 rounded-xl border border-indigo-100 dark:border-indigo-900">
-                  "{currentReflection.weekSummary || currentReflection.reflection || 'Great week of steady reflection and goal alignment.'}"
-                </p>
+              <p className="text-slate-800 dark:text-slate-200 leading-relaxed text-sm italic bg-indigo-50/50 dark:bg-indigo-950/40 p-5 rounded-2xl border border-indigo-100 dark:border-indigo-900/50 font-medium">
+                "{currentReflection.weekSummary || 'Great week of steady reflection and goal alignment.'}"
+              </p>
 
-                <div className="grid grid-cols-2 gap-4 py-3 border-t border-slate-100 dark:border-slate-800">
-                   <div>
-                      <p className="text-[10px] font-bold text-slate-400 uppercase mb-1">Emotional Trend</p>
-                      <p className="text-indigo-600 dark:text-indigo-400 font-extrabold text-base">{currentReflection.emotionalTrend || 'Positive & Focused'}</p>
-                   </div>
-                   <div>
-                      <p className="text-[10px] font-bold text-slate-400 uppercase mb-1">Weekly Growth Score</p>
-                      <div className="flex items-center gap-2">
-                        <div className="flex-1 h-2.5 bg-slate-100 dark:bg-slate-800 rounded-full overflow-hidden">
-                          <div
-                            className="h-full bg-indigo-600 dark:bg-indigo-400 rounded-full transition-all duration-500"
-                            style={{ width: `${currentReflection.growthScore || 85}%` }}
-                          ></div>
-                        </div>
-                        <span className="font-black text-indigo-600 dark:text-indigo-400 text-sm">{currentReflection.growthScore || 85}/100</span>
+              <div className="grid grid-cols-2 gap-4 pt-2">
+                 <div className="space-y-1">
+                    <p className="text-[10px] font-black text-slate-400 uppercase">Emotional Frequency Trend</p>
+                    <p className="text-indigo-600 dark:text-indigo-400 font-black text-base">{currentReflection.emotionalTrend || 'Positive & Focused'}</p>
+                 </div>
+                 <div className="space-y-1">
+                    <p className="text-[10px] font-black text-slate-400 uppercase">Weekly Growth Score</p>
+                    <div className="flex items-center gap-2">
+                      <div className="flex-1 h-3 bg-slate-100 dark:bg-slate-800 rounded-full overflow-hidden">
+                        <div
+                          className="h-full bg-gradient-to-r from-indigo-500 to-purple-600 rounded-full"
+                          style={{ width: `${currentReflection.growthScore || 90}%` }}
+                        />
                       </div>
-                   </div>
-                </div>
+                      <span className="font-black text-indigo-600 dark:text-indigo-400 text-sm">{currentReflection.growthScore || 90}/100</span>
+                    </div>
+                 </div>
               </div>
             </div>
 
             <div className="grid md:grid-cols-2 gap-6">
-              <div className="card">
-                <div className="flex items-center gap-2 text-indigo-600 dark:text-indigo-400 mb-4">
-                  <BarChart3 size={20} />
-                  <h3 className="font-bold">Major Themes</h3>
+              <div className="bg-white dark:bg-slate-900/60 p-7 rounded-[2.5rem] border border-slate-200 dark:border-slate-800/80 space-y-4 shadow-sm">
+                <div className="flex items-center gap-2 text-indigo-600 dark:text-indigo-400 font-black text-xs uppercase tracking-widest">
+                  <BarChart3 size={18} /> Major Reflection Themes
                 </div>
                 <div className="flex flex-wrap gap-2">
-                  {(currentReflection.majorThemes || currentReflection.topics || ['Mindfulness', 'Personal Growth', 'Productivity']).map((topic: string) => (
-                    <span key={topic} className="px-3 py-1 bg-indigo-50 dark:bg-indigo-950 text-indigo-700 dark:text-indigo-300 rounded-full text-xs font-bold uppercase border border-indigo-100 dark:border-indigo-900">
+                  {(currentReflection.majorThemes || ['Mindfulness', 'Personal Growth', 'Productivity']).map((topic: string) => (
+                    <span key={topic} className="px-3.5 py-1.5 bg-indigo-50 dark:bg-indigo-950 text-indigo-700 dark:text-indigo-300 rounded-xl text-[10px] font-black uppercase border border-indigo-100 dark:border-indigo-900">
                       #{topic}
                     </span>
                   ))}
                 </div>
               </div>
 
-              <div className="card">
-                <div className="flex items-center gap-2 text-emerald-600 dark:text-emerald-400 mb-4">
-                  <Award size={20} />
-                  <h3 className="font-bold">Key Achievements</h3>
+              <div className="bg-white dark:bg-slate-900/60 p-7 rounded-[2.5rem] border border-slate-200 dark:border-slate-800/80 space-y-4 shadow-sm">
+                <div className="flex items-center gap-2 text-emerald-600 dark:text-emerald-400 font-black text-xs uppercase tracking-widest">
+                  <Award size={18} /> Key Accomplishments
                 </div>
                 <ul className="space-y-2">
-                  {(currentReflection.achievements || currentReflection.keyInsights || ['Maintained daily reflection habit', 'Achieved clarity on upcoming goals']).map((item: string, i: number) => (
+                  {(currentReflection.achievements || ['Maintained daily reflection habit', 'Achieved clarity on upcoming goals']).map((item: string, i: number) => (
                     <li key={i} className="text-slate-700 dark:text-slate-300 text-xs font-medium flex gap-2">
-                      <span className="text-emerald-500 font-bold">✓</span> {item}
+                      <CheckCircle size={14} className="text-emerald-500 flex-shrink-0 mt-0.5" />
+                      <span>{item}</span>
                     </li>
                   ))}
                 </ul>
               </div>
             </div>
 
-            <div className="card border-indigo-100 dark:border-indigo-900/50 bg-indigo-50/20 dark:bg-indigo-950/20">
-              <h3 className="font-bold text-slate-900 dark:text-white mb-3 flex items-center gap-2">
-                <Target size={20} className="text-indigo-600 dark:text-indigo-400" />
+            <div className="bg-white dark:bg-slate-900/60 p-7 rounded-[2.5rem] border border-slate-200 dark:border-slate-800/80 space-y-3 shadow-sm">
+              <h3 className="font-black text-slate-900 dark:text-white text-xs uppercase tracking-widest flex items-center gap-2">
+                <Target size={18} className="text-indigo-600 dark:text-indigo-400" />
                 Suggested Focus for Next Week
               </h3>
-              <p className="text-slate-700 dark:text-slate-300 bg-white dark:bg-slate-900 p-4 rounded-xl border border-slate-200 dark:border-slate-800 text-sm font-medium italic">
-                "{currentReflection.focusForNextWeek || (currentReflection.actionItems && currentReflection.actionItems[0]) || 'Continue daily journaling and focus on balanced productivity.'}"
+              <p className="text-slate-700 dark:text-slate-300 bg-slate-50 dark:bg-slate-950 p-4 rounded-2xl border border-slate-200 dark:border-slate-800 text-xs font-medium italic">
+                "{currentReflection.focusForNextWeek || 'Continue daily journaling and focus on balanced productivity.'}"
               </p>
             </div>
           </div>
 
           <div className="space-y-6">
-            <div className="card">
-              <h3 className="font-bold text-slate-900 dark:text-white mb-4">Report History</h3>
-              <div className="space-y-2.5">
+            <div className="bg-white dark:bg-slate-900/60 p-7 rounded-[2.5rem] border border-slate-200 dark:border-slate-800/80 space-y-4 shadow-sm">
+              <h3 className="font-black text-slate-900 dark:text-white text-xs uppercase tracking-widest">Report History</h3>
+              <div className="space-y-2">
                 {reflections.map((ref) => (
                   <button
                     key={ref.id || Math.random()}
                     onClick={() => setCurrentReflection(ref)}
-                    className={`w-full text-left p-3 rounded-xl border transition-all ${
+                    className={`w-full text-left p-3.5 rounded-2xl border transition-all ${
                       currentReflection.id === ref.id
-                        ? 'border-indigo-600 dark:border-indigo-400 bg-indigo-50 dark:bg-indigo-950/60 ring-1 ring-indigo-600'
-                        : 'border-slate-200 dark:border-slate-800 hover:border-indigo-300 dark:hover:border-indigo-700 bg-white dark:bg-slate-900'
+                        ? 'border-indigo-600 bg-indigo-50 dark:bg-indigo-950/60'
+                        : 'border-slate-200 dark:border-slate-800 hover:border-indigo-300 bg-white dark:bg-slate-950'
                     }`}
                   >
                     <div className="flex items-center justify-between mb-1">
-                      <span className="text-[10px] font-bold text-slate-400 uppercase">
+                      <span className="text-[9px] font-mono font-bold text-slate-400 uppercase">
                         {formatDate(ref.createdAt || ref.generatedAt)}
                       </span>
                       {currentReflection.id === ref.id && <Sparkles size={12} className="text-indigo-600 dark:text-indigo-400" />}
                     </div>
-                    <p className="text-xs font-bold text-slate-800 dark:text-slate-200 truncate">{ref.weekSummary || ref.emotionalTrend || 'Weekly Report'}</p>
+                    <p className="text-xs font-bold text-slate-800 dark:text-slate-200 truncate">{ref.weekSummary || 'Weekly Report'}</p>
                   </button>
                 ))}
               </div>
             </div>
 
-            <div className="card bg-slate-900 dark:bg-slate-950 text-white space-y-3">
-              <BookOpen className="text-indigo-400" size={32} />
-              <h3 className="font-bold text-base">Weekly Growth Tracker</h3>
-              <p className="text-slate-400 text-xs leading-relaxed">
-                Consistency in self-reflection builds lifelong resilience. MindVault AI securely tracks your milestones.
+            <div className="bg-slate-900 text-white p-7 rounded-[2.5rem] space-y-3 shadow-2xl border border-slate-800">
+              <BookOpen className="text-indigo-400" size={28} />
+              <h3 className="font-black text-sm uppercase tracking-widest">Weekly Growth Tracker</h3>
+              <p className="text-slate-400 text-xs leading-relaxed font-medium">
+                Consistency in self-reflection builds lifelong emotional resilience. MindVault AI tracks your growth milestones automatically.
               </p>
             </div>
           </div>

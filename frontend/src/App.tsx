@@ -44,7 +44,9 @@ function App() {
             <Route path="settings" element={<Settings />} />
             <Route path="about" element={<About />} />
             <Route path="profile" element={<Profile />} />
+            <Route path="*" element={<Navigate to="/dashboard" replace />} />
           </Route>
+          <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
       </Router>
     </ThemeProvider>
