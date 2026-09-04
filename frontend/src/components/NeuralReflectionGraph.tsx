@@ -201,7 +201,9 @@ export const NeuralReflectionGraph: React.FC<NeuralReflectionGraphProps> = ({
 
   const filteredNodes = useMemo(() => {
     if (activeFilter === 'all') return nodes;
-    return nodes.filter(n => n.type === activeFilter || n.type === 'hub');
+    if (activeFilter === 'entries') return nodes.filter(n => n.type === 'entry' || n.type === 'hub');
+    if (activeFilter === 'tags') return nodes.filter(n => n.type === 'tag' || n.type === 'hub');
+    return nodes;
   }, [nodes, activeFilter]);
 
   return (
