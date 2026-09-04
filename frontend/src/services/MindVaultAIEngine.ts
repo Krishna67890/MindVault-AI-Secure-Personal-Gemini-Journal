@@ -126,6 +126,7 @@ export class MindVaultAIEngine {
     }
 
     // Default MindVault Human AI Persona
+    let responseText = '';
     if (isSad) {
       responseText = `I feel a deep, gentle sense of empathy for what you're going through. It takes genuine courage to express sadness, and your feelings are completely valid.\n\n` +
         `In your MindVault sanctuary, every emotion has a safe place to rest. I feel that sitting quietly with this feeling will bring soft clarity. What does your heart need most right now?`;
