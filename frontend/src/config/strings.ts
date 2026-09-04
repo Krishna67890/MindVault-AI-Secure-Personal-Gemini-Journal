@@ -27,14 +27,14 @@ export const strings = {
       logs: { label: "Zero Log Policy", value: "No Server Logs" }
     },
     workspace: {
-      title: "MindVault Workspace v9.2",
+      title: "MindVault Workspace V1 NEUTRAL",
       tabs: {
         chat: "Neural Chat",
         growth: "Growth Matrix",
         security: "Fortress Security"
       },
       chat: {
-        persona: "Gemini Pro - Deep Listener Persona",
+        persona: "Gemini - Deep Listener Persona",
         status: "Neural Link Established",
         encryption: "100% Encrypted Stream",
         mockUser: "I completed my core project milestone today, but I'm unsure what to prioritize next.",
@@ -107,7 +107,7 @@ export const strings = {
       description: "Initialize your free private neural vault in seconds with Google Secure Sign-In.",
       button: "Get Started Now"
     },
-    footer: "© 2026 MindVault AI • Privacy-First Neural Innovation"
+    footer: "© 2026 MindVault AI • V1 NEUTRAL • Privacy-First Innovation"
   },
   login: {
     branding: {
@@ -226,6 +226,7 @@ export const strings = {
       defaultTitle: "Chat Insight Reflection"
     },
     personas: [
+      { id: 'inbuilt', name: 'MindVault Human AI', desc: 'Default inbuilt human-like reflection assistant' },
       { id: 'listener', name: 'Gemini Deep Listener', desc: 'Empathic reflection & active listener' },
       { id: 'coach', name: 'Claude Cognitive Coach', desc: 'Strategic clarity & actionable goals' },
       { id: 'socratic', name: 'Socratic Philosopher', desc: 'Deep questioning & perspective shifts' },
@@ -257,6 +258,9 @@ export const strings = {
     entry: {
       untitled: "Untitled Thought",
       deleteConfirm: "Are you sure you want to erase this reflection from your vault?"
+    },
+    export: {
+      filename: "mindvault_backup_"
     }
   },
   insights: {
@@ -322,7 +326,7 @@ export const strings = {
       clientEncrypted: "Client Encrypted",
       description: "MindVault AI utilizes client-side API keys for neural processing. Keys are stored locally in your browser's encrypted storage and are never sent to external application servers.",
       labels: {
-        gemini: "Gemini Pro API Key",
+        gemini: "Gemini API Key",
         claude: "Claude 3.5 Sonnet Key (Optional)",
         provider: "Preferred Model Provider"
       },
@@ -396,6 +400,9 @@ export const strings = {
       titlePlaceholder: "Reflection Title...",
       contentPlaceholder: "Begin writing your neural reflection...",
       autoTitle: "Auto-Title",
+      autoTitleTooltip: "Generate Auto-Title from content",
+      defaultTitle: "Untitled Reflection",
+      defaultTag: "Personal Reflection",
       moods: ["Happy", "Neutral", "Sad", "Stressed", "Excited", "Productive", "Anxious", "Reflective"],
       encrypted: "End-to-End Encrypted",
       chars: "characters",
@@ -414,7 +421,8 @@ export const strings = {
       },
       summary: "Summary Extraction",
       nodes: "Neural Nodes",
-      directive: "Growth Directive"
+      directive: "Growth Directive",
+      errorFallback: "Standard neural analysis generated."
     }
   },
   about: {
@@ -425,8 +433,7 @@ export const strings = {
     },
     mission: {
       title: "Our Mission",
-      description1: "MindVault AI is a privacy-first AI journaling platform engineered to empower individuals to understand their thoughts, reflect on their life events, and evolve personally through Gemini & Claude AI models.",
-      description2: "We combine AI, client-side encryption, and modern web software to transform everyday reflections into actionable growth insights.",
+      description: "MindVault AI is a privacy-first AI journaling platform engineered to empower individuals to understand their thoughts, reflect on their life events, and evolve personally through Gemini & Claude AI models. We combine AI, client-side encryption, and modern web software to transform everyday reflections into actionable growth insights.",
       boxes: [
         { title: "Zero-Trust Privacy", desc: "100% Client-side isolation" },
         { title: "Neural NLP", desc: "Gemini & Claude Models" },
@@ -438,10 +445,250 @@ export const strings = {
       title: "Meet the Architect",
       name: "Krishna Patil Rajput",
       role: "Full-Stack Web Developer • AI Systems Engineer",
-      bio: "Passionate about engineering applications that blend AI, modern front-end design systems, and secure software architecture for personal empowerment."
+      bio: "Passionate about engineering applications that blend AI, modern front-end design systems, and secure software architecture for personal empowerment.",
+      portfolio: "https://krishna-patil-rajput.vercel.app/",
+      github: "https://github.com/Krishna67890"
     },
     tech: {
-      title: "Built With Cutting-Edge Tech"
+      title: "Built With Cutting-Edge Tech",
+      stack: ["React 18 + Vite", "Firebase Firestore", "Google Gemini", "TailwindCSS"],
+      badges: ["React + Vite", "Firebase Auth", "Gemini", "Google Cloud"]
+    }
+  },
+  profile: {
+    header: {
+      title: "User Profile & Identity",
+      description: "Customize your display name, avatar logo, bio description, and personal vault preferences."
+    },
+    form: {
+      success: "Profile identity updated successfully!",
+      labels: {
+        name: "Display Name",
+        bio: "Bio / Description",
+        avatarUrl: "Custom Logo / Image URL",
+        presets: "Preset Avatar Logos"
+      },
+      placeholders: {
+        name: "Enter your display name",
+        bio: "Write a short description about yourself...",
+        avatarUrl: "Paste image URL (https://...)"
+      },
+      buttons: {
+        reset: "Reset Developer Logo",
+        save: "Save Profile Changes",
+        saving: "Saving Profile..."
+      }
+    },
+    presets: {
+      developer: "Developer Logo",
+      cosmic: "Cosmic Reflector",
+      explorer: "AI Explorer",
+      sage: "Mindful Sage",
+      visionary: "Creative Visionary"
+    },
+    defaults: {
+      name: "Krishna Patil Rajput",
+      bio: "Passionate about AI, personal reflection, and software architecture."
+    },
+    sidebar: {
+      achievements: "Vault Achievements",
+      security: "Account Security",
+      uid: "Neural UID",
+      isolation: "Data Isolation Status",
+      encrypted: "100% Client Encrypted"
+    },
+    badges: {
+      explorer: { title: "AI Explorer", sub: "Connected Gemini Model" },
+      writer: { title: "Mindful Writer", sub: "{count} reflections stored" },
+      pioneer: { title: "Neural Pioneer", sub: "{count} AI conversations" },
+      streak: { title: "Reflection Streak", sub: "Active Daily Habits" }
+    }
+  },
+  journalDetail: {
+    loading: "Decrypting Vault Entry",
+    error: {
+      notFound: "Vault record not found",
+      linkError: "Neural link error",
+      denied: "Vault Access Denied",
+      description: "The record you are looking for might have been erased or moved.",
+      backBtn: "Back to History"
+    },
+    success: {
+      updated: "Vault updated successfully.",
+      analyzed: "Neural re-analysis complete."
+    },
+    header: {
+      back: "Vault Archive",
+      edit: "Edit Reflection",
+      untitled: "Untitled Thought"
+    },
+    actions: {
+      listen: "Listen",
+      stop: "Stop Narration",
+      sync: "Neural Sync",
+      save: "Save Changes",
+      edit: "Edit Entry",
+      deleteConfirm: "Erase this reflection from your vault permanently?"
+    },
+    entry: {
+      fallbackDate: "Recent Entry",
+      chars: "characters",
+      words: "words"
+    },
+    analysis: {
+      tag: "Neural Result",
+      summary: "Summary",
+      directives: "Action Directives",
+      missing: {
+        title: "Neural Map Missing",
+        description: "Generate AI analysis for this reflection.",
+        button: "Analyze Now"
+      }
+    },
+    security: {
+      title: "Encryption Status",
+      description: "Protected by zero-access client encryption. Only authorized UID can decrypt this record."
+    }
+  },
+  apiKeyBanner: {
+    active: {
+      prefix: "AI API Key active (",
+      suffix: " API). Ready for AI Chatbot & Analysis!",
+      change: "Change Key"
+    },
+    missing: {
+      title: "Enter Your Own API Key to Unlock AI Features",
+      description: "Add your Gemini API key (or optional Claude API key) to use AI Chatbot, Journal Auto-Analysis, Growth Insights, and Weekly Reports!",
+      button: "Enter API Key"
+    },
+    modal: {
+      title: "AI API Key Settings",
+      subtitle: "Stored locally in browser for max privacy",
+      success: "API Key Saved & Activated!",
+      labels: {
+        gemini: "Gemini API Key",
+        claude: "Claude (Anthropic) API Key",
+        provider: "Preferred AI Model Provider"
+      },
+      links: {
+        geminiHint: "Get key from Google AI Studio",
+        geminiBtn: "Get Gemini Key",
+        claudeHint: "Get key from Anthropic Console",
+        claudeBtn: "Get Claude Key"
+      },
+      providers: {
+        gemini: "Gemini",
+        claude: "Claude",
+        geminiFull: "Gemini (Google)",
+        claudeFull: "Claude (Anthropic)"
+      },
+      buttons: {
+        cancel: "Cancel",
+        save: "Save & Activate"
+      },
+      securityNote: "MindVault follows a zero-trust policy. Your keys never touch our servers and are encrypted in your browser's Local Storage."
+    }
+  },
+  layout: {
+    nav: {
+      dashboard: "Dashboard",
+      chat: "AI Chat",
+      journal: "Reflections",
+      insights: "Insights",
+      weekly: "Weekly Report",
+      profile: "Profile",
+      settings: "Settings",
+      about: "About"
+    },
+    sidebar: {
+      version: "V1 NEUTRAL",
+      searchPlaceholder: "Search Vault...",
+      kbd: "CTRL K",
+      status: "Zero-Trust Active",
+      viewProfile: "View Vault Identity",
+      signOut: "Secure Sign Out"
+    },
+    header: {
+      appName: "MINVDAULT CORE",
+      updates: "Neural Updates",
+      syncActive: "Neural Sync Active",
+      syncDesc: "Your reflections are being analyzed by Gemini in real-time.",
+      proTip: "Neural Shortcut",
+      proTipDesc: "Press {kbd} anywhere to open the command console."
+    }
+  },
+  weekly: {
+    loading: "Synthesizing 7-Day Performance Report...",
+    header: {
+      title: "Weekly AI Reflection Report",
+      description: "Comprehensive 7-day emotional trend analysis, cognitive growth score, and next-week action plan.",
+      printBtn: "Print Report",
+      generateBtn: "Generate Weekly Report"
+    },
+    errorFallback: "Generated standard weekly reflection report.",
+    empty: {
+      title: "No Weekly Reports Generated Yet",
+      description: "Review your progress, emotional trends, and key achievements over the past 7 days.",
+      button: "Reflect on My Week"
+    },
+    overview: {
+      title: "7-Day Performance Overview",
+      fallbackDate: "Recent Report",
+      summaryPlaceholder: "Great week of steady reflection and goal alignment.",
+      moodTrend: "Emotional Frequency Trend",
+      moodFallback: "Positive & Focused",
+      growthScore: "Weekly Growth Score"
+    },
+    themes: {
+      title: "Major Reflection Themes"
+    },
+    accomplishments: {
+      title: "Key Accomplishments"
+    },
+    focus: {
+      title: "Suggested Focus for Next Week",
+      fallback: "Continue daily journaling and focus on balanced productivity."
+    },
+    history: {
+      title: "Report History",
+      untitled: "Weekly Report"
+    },
+    tracker: {
+      title: "Weekly Growth Tracker",
+      description: "Consistency in self-reflection builds lifelong emotional resilience. MindVault AI tracks your growth milestones automatically."
+    }
+  },
+  commandPalette: {
+    placeholder: "Type a command, search entries, or jump to...",
+    kbdLabel: "ESC",
+    sections: {
+      commands: "Commands & Navigation",
+      matching: "Matching Reflections"
+    },
+    actions: {
+      newJournal: "Create New Reflection",
+      chat: "Start AI Neural Chat",
+      insights: "View Neural Insights",
+      weekly: "Generate Weekly Report",
+      settings: "Open System Settings",
+      profile: "View Profile & Logo",
+      theme: {
+        light: "Switch to Light Mode",
+        dark: "Switch to Dark Mode"
+      }
+    },
+    categories: {
+      action: "Action",
+      navigation: "Navigation",
+      theme: "Theme"
+    },
+    entries: {
+      untitled: "Untitled Thought",
+      noResults: "No encrypted records match"
+    },
+    footer: {
+      engine: "MindVault Command Engine",
+      encrypted: "End-to-End Encrypted"
     }
   }
 };

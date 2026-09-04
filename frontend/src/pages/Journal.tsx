@@ -55,7 +55,7 @@ const Journal: React.FC = () => {
     const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(entries, null, 2));
     const downloadAnchor = document.createElement('a');
     downloadAnchor.setAttribute("href", dataStr);
-    downloadAnchor.setAttribute("download", `mindvault_backup_${new Date().toISOString().slice(0, 10)}.json`);
+    downloadAnchor.setAttribute("download", `${strings.journal.export.filename}${new Date().toISOString().slice(0, 10)}.json`);
     document.body.appendChild(downloadAnchor);
     downloadAnchor.click();
     downloadAnchor.remove();
@@ -82,13 +82,15 @@ const Journal: React.FC = () => {
   });
 
   return (
-    <div className="space-y-8 pb-20 font-sans">
+    <div className="relative space-y-8 pb-20 font-sans">
+      {/* Background decoration */}
+      <div className="fixed inset-0 cyber-grid opacity-20 pointer-events-none" />
       
       {/* Header */}
-      <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 px-2">
+      <div className="relative flex flex-col md:flex-row md:items-end justify-between gap-6 px-2">
         <div className="space-y-2">
           <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-indigo-500/10 text-indigo-500 text-[10px] font-black uppercase tracking-widest border border-indigo-500/20">
-            <Sparkles size={12} /> {strings.journal.header.tag}
+            <Sparkles size={12} className="animate-pulse" /> {strings.journal.header.tag}
           </div>
           <h1 className="text-4xl md:text-5xl font-black text-slate-900 dark:text-white tracking-tight">{strings.journal.header.title}</h1>
           <p className="text-slate-500 dark:text-slate-400 font-medium text-sm max-w-lg">
@@ -99,7 +101,7 @@ const Journal: React.FC = () => {
         <div className="flex flex-wrap gap-3">
           <button
             onClick={handleExportVault}
-            className="flex items-center gap-2 px-5 py-3.5 bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 rounded-2xl text-xs font-black uppercase tracking-widest hover:bg-slate-200 dark:hover:bg-slate-700 transition-all border border-slate-200 dark:border-slate-700"
+            className="flex items-center gap-2 px-5 py-3.5 bg-white dark:bg-slate-900/60 text-slate-700 dark:text-slate-300 rounded-2xl text-xs font-black uppercase tracking-widest hover:bg-slate-50 dark:hover:bg-slate-800 transition-all border border-slate-200 dark:border-slate-800/80 shadow-sm"
           >
             <Download size={16} /> {strings.journal.header.exportBtn}
           </button>
@@ -110,7 +112,7 @@ const Journal: React.FC = () => {
       </div>
 
       {/* Control Bar (Search, Mood Filter, View Modes) */}
-      <div className="flex flex-col lg:flex-row gap-4 justify-between items-stretch lg:items-center bg-white dark:bg-slate-900/60 p-4 rounded-3xl border border-slate-200 dark:border-slate-800/80 shadow-sm">
+      <div className="relative flex flex-col lg:flex-row gap-4 justify-between items-stretch lg:items-center glass-cyber p-4 rounded-3xl border border-white/10 shadow-2xl">
         
         {/* Search */}
         <div className="relative flex-1">
@@ -120,7 +122,7 @@ const Journal: React.FC = () => {
             placeholder={strings.journal.controls.searchPlaceholder}
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            className="w-full pl-11 pr-4 py-2.5 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl text-xs font-medium text-slate-900 dark:text-white focus:outline-none focus:border-indigo-500"
+            className="w-full pl-11 pr-4 py-2.5 bg-slate-50 dark:bg-slate-950/50 border border-slate-200 dark:border-slate-800/50 rounded-xl text-xs font-medium text-slate-900 dark:text-white focus:outline-none focus:border-indigo-500 transition-all"
           />
         </div>
 
@@ -132,8 +134,8 @@ const Journal: React.FC = () => {
               onClick={() => setSelectedMood(m)}
               className={`px-3 py-1.5 rounded-xl text-[11px] font-black uppercase tracking-wider transition-all flex-shrink-0 ${
                 selectedMood === m
-                  ? 'bg-indigo-600 text-white shadow-md'
-                  : 'bg-slate-100 dark:bg-slate-800 text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'
+                  ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-500/25'
+                  : 'bg-white/50 dark:bg-slate-800/50 text-slate-500 dark:text-slate-400 hover:text-indigo-500 dark:hover:text-indigo-400'
               }`}
             >
               {m}
@@ -142,24 +144,24 @@ const Journal: React.FC = () => {
         </div>
 
         {/* View Mode Switcher */}
-        <div className="flex items-center gap-1 bg-slate-100 dark:bg-slate-800 p-1 rounded-xl flex-shrink-0">
+        <div className="flex items-center gap-1 bg-slate-100/50 dark:bg-slate-800/50 p-1 rounded-xl flex-shrink-0">
           <button
             onClick={() => setViewMode('grid')}
-            className={`p-2 rounded-lg text-xs font-bold transition-all ${viewMode === 'grid' ? 'bg-white dark:bg-slate-900 text-indigo-500 shadow-sm' : 'text-slate-400'}`}
+            className={`p-2 rounded-lg text-xs font-bold transition-all ${viewMode === 'grid' ? 'bg-white dark:bg-slate-900 text-indigo-500 shadow-sm' : 'text-slate-400 hover:text-slate-600'}`}
             title={strings.journal.controls.viewModes.grid}
           >
             <LayoutGrid size={16} />
           </button>
           <button
             onClick={() => setViewMode('timeline')}
-            className={`p-2 rounded-lg text-xs font-bold transition-all ${viewMode === 'timeline' ? 'bg-white dark:bg-slate-900 text-indigo-500 shadow-sm' : 'text-slate-400'}`}
+            className={`p-2 rounded-lg text-xs font-bold transition-all ${viewMode === 'timeline' ? 'bg-white dark:bg-slate-900 text-indigo-500 shadow-sm' : 'text-slate-400 hover:text-slate-600'}`}
             title={strings.journal.controls.viewModes.timeline}
           >
             <Calendar size={16} />
           </button>
           <button
             onClick={() => setViewMode('compact')}
-            className={`p-2 rounded-lg text-xs font-bold transition-all ${viewMode === 'compact' ? 'bg-white dark:bg-slate-900 text-indigo-500 shadow-sm' : 'text-slate-400'}`}
+            className={`p-2 rounded-lg text-xs font-bold transition-all ${viewMode === 'compact' ? 'bg-white dark:bg-slate-900 text-indigo-500 shadow-sm' : 'text-slate-400 hover:text-slate-600'}`}
             title={strings.journal.controls.viewModes.compact}
           >
             <List size={16} />
@@ -169,56 +171,59 @@ const Journal: React.FC = () => {
 
       {/* Main Entries Area */}
       {loading ? (
-        <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+        <div className="relative grid gap-6 md:grid-cols-2 lg:grid-cols-3">
           {[1, 2, 3, 4, 5, 6].map(i => (
-            <div key={i} className="h-48 bg-slate-200 dark:bg-slate-800/50 rounded-[2.5rem] animate-pulse"></div>
+            <div key={i} className="h-64 bg-slate-200 dark:bg-slate-800/50 rounded-[2.5rem] animate-pulse"></div>
           ))}
         </div>
       ) : filteredEntries.length === 0 ? (
-        <div className="bg-white dark:bg-slate-900/40 border-2 border-dashed border-slate-200 dark:border-slate-800 rounded-[3rem] py-28 text-center space-y-4">
-          <div className="w-20 h-20 bg-indigo-500/10 text-indigo-500 rounded-3xl flex items-center justify-center mx-auto shadow-inner">
-            <BookText size={36} />
+        <div className="relative glass-cyber border-2 border-dashed border-indigo-500/20 rounded-[3rem] py-32 text-center space-y-6">
+          <div className="w-24 h-24 bg-indigo-500/10 text-indigo-500 rounded-3xl flex items-center justify-center mx-auto shadow-2xl border border-indigo-500/20">
+            <BookText size={40} className="animate-pulse" />
           </div>
-          <div className="space-y-1">
-            <h3 className="text-2xl font-black text-slate-900 dark:text-white">{strings.journal.emptyState.title}</h3>
-            <p className="text-slate-500 text-xs font-medium max-w-xs mx-auto">
+          <div className="space-y-2">
+            <h3 className="text-2xl font-black text-slate-900 dark:text-white uppercase tracking-tight">{strings.journal.emptyState.title}</h3>
+            <p className="text-slate-500 dark:text-slate-400 text-xs font-black uppercase tracking-widest max-w-xs mx-auto opacity-70">
               {search || selectedMood !== 'All' ? strings.journal.emptyState.searchMatchError : strings.journal.emptyState.noRecords}
             </p>
           </div>
+          <Link to="/journal/new" className="inline-flex items-center gap-2 px-6 py-3 bg-indigo-500 text-white rounded-2xl text-[10px] font-black uppercase tracking-widest hover:bg-indigo-600 transition-all shadow-lg shadow-indigo-500/20">
+            <Plus size={14} /> {strings.journal.header.newBtn}
+          </Link>
         </div>
       ) : viewMode === 'grid' ? (
-        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div className="relative grid md:grid-cols-2 lg:grid-cols-3 gap-6">
           {filteredEntries.map((entry) => {
             const date = formatDate(entry.createdAt);
             return (
               <div
                 key={entry.id}
                 onClick={() => navigate(`/journal/${entry.id}`)}
-                className="group bg-white dark:bg-slate-900/60 backdrop-blur-sm border border-slate-200 dark:border-slate-800/80 p-7 rounded-[2.5rem] hover:border-indigo-500/50 transition-all hover:shadow-2xl hover:shadow-indigo-500/5 cursor-pointer flex flex-col justify-between space-y-6 glow-card"
+                className="group relative bg-white dark:bg-slate-900/60 backdrop-blur-md border border-slate-200 dark:border-slate-800/80 p-8 rounded-[2.5rem] hover:border-indigo-500/50 transition-all hover:shadow-2xl hover:shadow-indigo-500/10 cursor-pointer flex flex-col justify-between space-y-6 glow-card"
               >
-                <div className="space-y-3">
+                <div className="space-y-4">
                   <div className="flex justify-between items-start">
-                    <span className="text-[10px] font-black uppercase tracking-widest text-indigo-500">{date.full}</span>
+                    <span className="text-[10px] font-black uppercase tracking-widest text-indigo-500 bg-indigo-500/5 px-2.5 py-1 rounded-lg border border-indigo-500/10">{date.full}</span>
                     {entry.mood && (
-                      <span className="text-[10px] font-black uppercase tracking-wider text-slate-500 bg-slate-100 dark:bg-slate-800 px-2.5 py-1 rounded-lg">
+                      <span className="text-[10px] font-black uppercase tracking-wider text-slate-500 dark:text-slate-400 bg-slate-100 dark:bg-slate-800/50 px-2.5 py-1 rounded-lg border border-slate-200 dark:border-slate-800/50">
                         {entry.mood}
                       </span>
                     )}
                   </div>
 
-                  <h3 className="text-xl font-black text-slate-900 dark:text-white group-hover:text-indigo-600 transition-colors tracking-tight line-clamp-2">
+                  <h3 className="text-xl font-black text-slate-900 dark:text-white group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors tracking-tight line-clamp-2 leading-tight">
                     {entry.title || strings.journal.entry.untitled}
                   </h3>
 
-                  <p className="text-slate-500 dark:text-slate-400 leading-relaxed font-medium text-xs line-clamp-3">
+                  <p className="text-slate-500 dark:text-slate-400 leading-relaxed font-medium text-xs line-clamp-3 opacity-90">
                     {entry.content}
                   </p>
                 </div>
 
-                <div className="pt-4 border-t border-slate-100 dark:border-slate-800/80 flex items-center justify-between">
-                  <div className="flex flex-wrap gap-1">
+                <div className="pt-5 border-t border-slate-100 dark:border-slate-800/80 flex items-center justify-between">
+                  <div className="flex flex-wrap gap-1.5">
                     {entry.tags?.slice(0, 2).map((tag: string) => (
-                      <span key={tag} className="text-[9px] font-mono font-bold text-slate-400">
+                      <span key={tag} className="text-[9px] font-black text-indigo-500/70 dark:text-indigo-400/60 uppercase tracking-tighter">
                         #{tag}
                       </span>
                     ))}
@@ -226,11 +231,13 @@ const Journal: React.FC = () => {
                   <div className="flex items-center gap-2">
                     <button
                       onClick={(e) => handleDelete(e, entry.id)}
-                      className="p-1.5 hover:bg-red-50 dark:hover:bg-red-950/40 text-slate-400 hover:text-red-500 rounded-lg transition-all"
+                      className="p-2 hover:bg-red-50 dark:hover:bg-red-950/40 text-slate-400 hover:text-red-500 rounded-xl transition-all border border-transparent hover:border-red-500/20"
                     >
                       <Trash2 size={14} />
                     </button>
-                    <ArrowUpRight size={16} className="text-slate-300 group-hover:text-indigo-500 transition-colors" />
+                    <div className="p-2 bg-slate-50 dark:bg-slate-800/50 rounded-xl group-hover:bg-indigo-500 transition-all">
+                      <ArrowUpRight size={14} className="text-slate-400 group-hover:text-white transition-colors" />
+                    </div>
                   </div>
                 </div>
               </div>
@@ -238,22 +245,27 @@ const Journal: React.FC = () => {
           })}
         </div>
       ) : viewMode === 'timeline' ? (
-        <div className="relative border-l-2 border-slate-200 dark:border-slate-800 ml-6 pl-10 space-y-8">
+        <div className="relative border-l-2 border-slate-200 dark:border-slate-800/50 ml-6 pl-10 space-y-8">
           {filteredEntries.map((entry) => {
             const date = formatDate(entry.createdAt);
             return (
               <div key={entry.id} className="relative group">
-                <div className="absolute -left-[49px] top-0 w-6 h-6 bg-white dark:bg-slate-950 border-4 border-indigo-500 rounded-full group-hover:scale-125 transition-transform" />
+                <div className="absolute -left-[49px] top-4 w-6 h-6 bg-white dark:bg-slate-950 border-4 border-indigo-500 rounded-full group-hover:scale-125 group-hover:bg-indigo-500 transition-all shadow-lg shadow-indigo-500/20" />
                 <div
                   onClick={() => navigate(`/journal/${entry.id}`)}
-                  className="bg-white dark:bg-slate-900/60 border border-slate-200 dark:border-slate-800/80 p-7 rounded-[2rem] hover:border-indigo-500/50 cursor-pointer space-y-3 shadow-sm glow-card"
+                  className="bg-white dark:bg-slate-900/60 backdrop-blur-md border border-slate-200 dark:border-slate-800/80 p-8 rounded-[2rem] hover:border-indigo-500/50 cursor-pointer space-y-4 shadow-sm glow-card transition-all"
                 >
                   <div className="flex justify-between items-center">
                     <span className="text-xs font-black text-indigo-500 uppercase tracking-widest">{date.full}</span>
                     <ArrowUpRight size={18} className="text-slate-300 group-hover:text-indigo-500 transition-colors" />
                   </div>
-                  <h3 className="text-xl font-black text-slate-900 dark:text-white">{entry.title || strings.journal.entry.untitled}</h3>
-                  <p className="text-xs font-medium text-slate-500 dark:text-slate-400 line-clamp-2">{entry.content}</p>
+                  <h3 className="text-xl font-black text-slate-900 dark:text-white leading-tight">{entry.title || strings.journal.entry.untitled}</h3>
+                  <p className="text-xs font-medium text-slate-500 dark:text-slate-400 line-clamp-2 opacity-80">{entry.content}</p>
+                  <div className="flex gap-2">
+                    {entry.tags?.slice(0, 3).map((tag: string) => (
+                      <span key={tag} className="text-[9px] font-black text-slate-400 uppercase tracking-wider">#{tag}</span>
+                    ))}
+                  </div>
                 </div>
               </div>
             );
@@ -261,34 +273,37 @@ const Journal: React.FC = () => {
         </div>
       ) : (
         /* Compact List View */
-        <div className="bg-white dark:bg-slate-900/60 border border-slate-200 dark:border-slate-800 rounded-3xl divide-y divide-slate-100 dark:divide-slate-800 overflow-hidden shadow-sm">
+        <div className="relative glass-cyber border border-white/10 rounded-3xl divide-y divide-slate-100 dark:divide-slate-800/50 overflow-hidden shadow-2xl">
           {filteredEntries.map((entry) => {
             const date = formatDate(entry.createdAt);
             return (
               <div
                 key={entry.id}
                 onClick={() => navigate(`/journal/${entry.id}`)}
-                className="p-5 flex items-center justify-between hover:bg-slate-50 dark:hover:bg-slate-800/40 cursor-pointer transition-all group"
+                className="p-5 flex items-center justify-between hover:bg-white/50 dark:hover:bg-slate-800/40 cursor-pointer transition-all group"
               >
-                <div className="flex items-center gap-4 min-w-0 pr-4">
-                  <div className="w-10 h-10 rounded-xl bg-indigo-500/10 text-indigo-500 font-black text-xs flex items-center justify-center flex-shrink-0">
+                <div className="flex items-center gap-5 min-w-0 pr-4">
+                  <div className="w-12 h-12 rounded-2xl bg-indigo-500/10 text-indigo-500 font-black text-xs flex items-center justify-center flex-shrink-0 border border-indigo-500/10">
                     {date.month}
                   </div>
                   <div className="truncate">
-                    <h4 className="text-sm font-black text-slate-900 dark:text-white truncate group-hover:text-indigo-500 transition-colors">
+                    <h4 className="text-sm font-black text-slate-900 dark:text-white truncate group-hover:text-indigo-500 transition-colors tracking-tight">
                       {entry.title || strings.journal.entry.untitled}
                     </h4>
-                    <p className="text-xs text-slate-400 truncate max-w-lg">{entry.content}</p>
+                    <p className="text-xs text-slate-500 dark:text-slate-400 truncate max-w-lg font-medium opacity-70">{entry.content}</p>
                   </div>
                 </div>
-                <div className="flex items-center gap-4 flex-shrink-0">
-                  <span className="text-[10px] font-bold text-slate-400 uppercase hidden sm:inline-block">{date.full}</span>
-                  <button
-                    onClick={(e) => handleDelete(e, entry.id)}
-                    className="p-1.5 hover:bg-red-50 dark:hover:bg-red-950/40 text-slate-400 hover:text-red-500 rounded-lg transition-all"
-                  >
-                    <Trash2 size={14} />
-                  </button>
+                <div className="flex items-center gap-6 flex-shrink-0">
+                  <span className="text-[10px] font-black text-slate-400 uppercase hidden sm:inline-block tracking-widest">{date.full}</span>
+                  <div className="flex items-center gap-2">
+                    <button
+                      onClick={(e) => handleDelete(e, entry.id)}
+                      className="p-2 hover:bg-red-50 dark:hover:bg-red-950/40 text-slate-400 hover:text-red-500 rounded-xl transition-all"
+                    >
+                      <Trash2 size={14} />
+                    </button>
+                    <ArrowUpRight size={16} className="text-slate-300 group-hover:text-indigo-500 transition-colors" />
+                  </div>
                 </div>
               </div>
             );

@@ -1,5 +1,6 @@
 import { GoogleGenerativeAI } from '@google/generative-ai';
 import { SecretService } from './SecretService';
+import { aiStrings } from '../config/aiStrings';
 
 export class GeminiService {
   private static cleanKey(key?: string) {
@@ -57,7 +58,7 @@ export class GeminiService {
       body: JSON.stringify({
         model: 'claude-3-5-sonnet-20241022',
         max_tokens: 1500,
-        system: systemPrompt || "You are MindVault AI assistant.",
+        system: systemPrompt || aiStrings.system.defaultAssistant,
         messages: messages.map(m => ({
           role: m.role === 'user' ? 'user' : 'assistant',
           content: m.content
@@ -84,7 +85,12 @@ export class GeminiService {
     const geminiKey = await this.getGeminiApiKey(userApiKey);
     const claudeKey = await this.getClaudeApiKey(userClaudeApiKey);
 
-    const provider = preferredProvider === 'claude' ? 'claude' : (preferredProvider === 'gemini' ? 'gemini' : (claudeKey && !geminiKey ? 'claude' : 'gemini'));
+    const provider = preferredProvider === 'inbuilt' ? 'inbuilt' : (preferredProvider === 'claude' ? 'claude' : (preferredProvider === 'gemini' ? 'gemini' : (claudeKey && !geminiKey ? 'claude' : 'gemini')));
+
+    // If inbuilt is explicitly selected, skip API calls
+    if (provider === 'inbuilt') {
+      return aiStrings.fallbacks.chat(message);
+    }
 
     // Try Claude if preferred or available
     if (provider === 'claude' && claudeKey) {
@@ -94,7 +100,7 @@ export class GeminiService {
           content: h.content
         }));
         formattedHistory.push({ role: 'user', content: message });
-        return await this.callClaudeAPI(formattedHistory, "You are MindVault AI, an empathetic personal reflection assistant.", claudeKey);
+        return await this.callClaudeAPI(formattedHistory, aiStrings.system.chat, claudeKey);
       } catch (err: any) {
         console.warn('Claude API error, attempting Gemini fallback:', err?.message);
       }
@@ -120,7 +126,7 @@ export class GeminiService {
     }
 
     // Smart fallback if no API key is provided or API calls fail
-    return `Thank you for sharing your thoughts: "${message.substring(0, 80)}${message.length > 80 ? '...' : ''}".\n\nTo unlock full multi-turn AI responses with Gemini or Claude, please enter your API key in Settings or click the "Enter API Key" button above!`;
+    return aiStrings.fallbacks.chat(message);
   }
 
   static async analyzeJournal(
@@ -129,25 +135,7 @@ export class GeminiService {
     userClaudeApiKey?: string,
     preferredProvider?: string
   ) {
-    const prompt = `
-      Analyze the following journal entry and provide a structured JSON response.
-      Identify the mood (a single word like Happy, Sad, Stressed, Productive, Anxious, Excited, Neutral),
-      main topics (max 3), key insights, action items, and a short summary.
-      Also provide a reflective thought that encourages personal growth.
-
-      Journal Entry:
-      "${content}"
-
-      Respond strictly with JSON in this format:
-      {
-        "summary": "string",
-        "mood": "string",
-        "topics": ["string"],
-        "keyInsights": ["string"],
-        "actionItems": ["string"],
-        "reflection": "string"
-      }
-    `;
+    const prompt = aiStrings.prompts.analysis(content);
 
     const geminiKey = await this.getGeminiApiKey(userApiKey);
     const claudeKey = await this.getClaudeApiKey(userClaudeApiKey);
@@ -155,7 +143,7 @@ export class GeminiService {
 
     if (provider === 'claude' && claudeKey) {
       try {
-        const text = await this.callClaudeAPI([{ role: 'user', content: prompt }], "Return valid JSON only.", claudeKey);
+        const text = await this.callClaudeAPI([{ role: 'user', content: prompt }], aiStrings.system.jsonOnly, claudeKey);
         const jsonMatch = text.match(/\{[\s\S]*\}/);
         if (jsonMatch) return JSON.parse(jsonMatch[0]);
       } catch (err: any) {
@@ -180,14 +168,8 @@ export class GeminiService {
     // Smart fallback analysis if keys fail or missing
     const fallbackMoods = ['Productive', 'Reflective', 'Neutral', 'Optimistic'];
     const words = content.split(/\s+/).filter(Boolean);
-    return {
-      summary: content.substring(0, 140) + (content.length > 140 ? '...' : ''),
-      mood: fallbackMoods[words.length % fallbackMoods.length],
-      topics: ['Daily Reflection', 'Self Growth'],
-      keyInsights: ['Expressing your feelings helps process complex thoughts.', 'Consistent reflection builds cognitive clarity.'],
-      actionItems: ['Review your key takeaways for today.', 'Set one meaningful priority for tomorrow.'],
-      reflection: 'Every entry in your vault is a milestone in understanding your journey.'
-    };
+    const mood = fallbackMoods[words.length % fallbackMoods.length];
+    return aiStrings.fallbacks.analysis(content, mood);
   }
 
   static async generateWeeklyReport(
@@ -196,29 +178,14 @@ export class GeminiService {
     userClaudeApiKey?: string,
     preferredProvider?: string
   ) {
-    const prompt = `
-      Based on the journal entries from the past week, generate a weekly reflection report.
-
-      Journals:
-      ${JSON.stringify(journals.map(j => ({ date: j.createdAt, content: j.content, mood: j.mood })))}
-
-      Respond strictly with JSON in this schema:
-      {
-        "weekSummary": "string",
-        "emotionalTrend": "string",
-        "majorThemes": ["string"],
-        "achievements": ["string"],
-        "focusForNextWeek": "string",
-        "growthScore": 85
-      }
-    `;
+    const prompt = aiStrings.prompts.weeklyReport(JSON.stringify(journals.map(j => ({ date: j.createdAt, content: j.content, mood: j.mood }))));
 
     const geminiKey = await this.getGeminiApiKey(userApiKey);
     const claudeKey = await this.getClaudeApiKey(userClaudeApiKey);
 
     if (claudeKey) {
       try {
-        const text = await this.callClaudeAPI([{ role: 'user', content: prompt }], "Return valid JSON only.", claudeKey);
+        const text = await this.callClaudeAPI([{ role: 'user', content: prompt }], aiStrings.system.jsonOnly, claudeKey);
         const jsonMatch = text.match(/\{[\s\S]*\}/);
         if (jsonMatch) return JSON.parse(jsonMatch[0]);
       } catch {}
@@ -236,14 +203,7 @@ export class GeminiService {
       } catch {}
     }
 
-    return {
-      weekSummary: "A week of thoughtful journaling and self-reflection.",
-      emotionalTrend: "Steady & Growing",
-      majorThemes: ["Personal Growth", "Mindfulness", "Productivity"],
-      achievements: ["Maintained your journaling routine", "Captured key reflections"],
-      focusForNextWeek: "Continue daily reflection and maintain emotional balance.",
-      growthScore: 88
-    };
+    return aiStrings.fallbacks.weeklyReport;
   }
 
   static async generateGrowthTimeline(
@@ -252,32 +212,14 @@ export class GeminiService {
     userClaudeApiKey?: string,
     preferredProvider?: string
   ) {
-    const prompt = `
-      Based on user history, generate growth timeline JSON:
-      ${JSON.stringify(data)}
-
-      JSON Schema:
-      {
-        "growthSummary": "string",
-        "recurringTopics": ["string"],
-        "achievements": ["string"],
-        "challenges": ["string"],
-        "milestones": [
-          {
-            "date": "string",
-            "title": "string",
-            "description": "string"
-          }
-        ]
-      }
-    `;
+    const prompt = aiStrings.prompts.growthTimeline(JSON.stringify(data));
 
     const geminiKey = await this.getGeminiApiKey(userApiKey);
     const claudeKey = await this.getClaudeApiKey(userClaudeApiKey);
 
     if (claudeKey) {
       try {
-        const text = await this.callClaudeAPI([{ role: 'user', content: prompt }], "Return valid JSON only.", claudeKey);
+        const text = await this.callClaudeAPI([{ role: 'user', content: prompt }], aiStrings.system.jsonOnly, claudeKey);
         const jsonMatch = text.match(/\{[\s\S]*\}/);
         if (jsonMatch) return JSON.parse(jsonMatch[0]);
       } catch {}
@@ -295,18 +237,6 @@ export class GeminiService {
       } catch {}
     }
 
-    return {
-      growthSummary: "You are actively building self-awareness and emotional resilience through regular journaling.",
-      recurringTopics: ["Mindfulness", "Career Goals", "Personal Growth"],
-      achievements: ["Built a consistent reflection routine", "Gained clarity on personal goals"],
-      challenges: ["Managing work-life balance", "Task prioritization"],
-      milestones: [
-        {
-          date: new Date().toLocaleDateString(),
-          title: "MindVault AI Integration",
-          description: "Started recording thoughts and insights in your encrypted personal vault."
-        }
-      ]
-    };
+    return aiStrings.fallbacks.growthTimeline(new Date().toLocaleDateString());
   }
 }

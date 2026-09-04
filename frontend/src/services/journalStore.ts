@@ -1,4 +1,5 @@
 import api from './api';
+import { encryptContent, decryptContent, getVaultMasterKey } from '../utils/crypto';
 
 export interface JournalEntry {
   id: string;
@@ -38,10 +39,13 @@ export class JournalStore {
     const nowIso = new Date().toISOString();
     const tempId = 'entry_' + Date.now() + '_' + Math.random().toString(36).substring(2, 7);
 
+    const masterKey = getVaultMasterKey();
+    const encryptedContent = await encryptContent(data.content, masterKey);
+
     const newEntry: JournalEntry = {
       id: tempId,
       title: data.title || 'Untitled Entry',
-      content: data.content,
+      content: encryptedContent,
       mood: data.mood || 'Neutral',
       tags: data.tags || [],
       analysis: data.analysis || null,
@@ -106,7 +110,19 @@ export class JournalStore {
       if (r.id) map.set(r.id, r);
     });
 
-    const combined = Array.from(map.values());
+    const combined = await Promise.all(Array.from(map.values()).map(async e => {
+      try {
+        const masterKey = getVaultMasterKey();
+        // Check if content looks like base64 encrypted data (naive check)
+        if (e.content.length > 20 && !e.content.includes(' ')) {
+           const decrypted = await decryptContent(e.content, masterKey);
+           return { ...e, content: decrypted };
+        }
+      } catch (err) {
+        console.warn('Decryption failed for entry:', e.id);
+      }
+      return e;
+    }));
 
     // Sort by createdAt descending
     combined.sort((a, b) => {
@@ -133,13 +149,28 @@ export class JournalStore {
     try {
       const res = await api.get(`/journals/${id}`);
       if (res.data) {
-        return res.data;
+        const entry = res.data;
+        try {
+          const decrypted = await decryptContent(entry.content, getVaultMasterKey());
+          return { ...entry, content: decrypted };
+        } catch {
+          return entry;
+        }
       }
     } catch {
       console.warn(`Backend fetch single entry ${id} fallback to local storage`);
     }
 
-    return localMatch || null;
+    if (localMatch) {
+       try {
+         const decrypted = await decryptContent(localMatch.content, getVaultMasterKey());
+         return { ...localMatch, content: decrypted };
+       } catch {
+         return localMatch;
+       }
+    }
+
+    return null;
   }
 
   // Update entry
@@ -149,12 +180,20 @@ export class JournalStore {
     const nowIso = new Date().toISOString();
 
     if (index !== -1) {
-      locals[index] = { ...locals[index], ...data, updatedAt: nowIso };
+      const updatedData = { ...data };
+      if (data.content) {
+        updatedData.content = await encryptContent(data.content, getVaultMasterKey());
+      }
+      locals[index] = { ...locals[index], ...updatedData, updatedAt: nowIso };
       this.setLocalEntries(locals);
     }
 
     try {
-      await api.put(`/journals/${id}`, data);
+      const apiData = { ...data };
+      if (data.content) {
+        apiData.content = await encryptContent(data.content, getVaultMasterKey());
+      }
+      await api.put(`/journals/${id}`, apiData);
     } catch (err) {
       console.warn(`Backend update entry ${id} warning:`, err);
     }

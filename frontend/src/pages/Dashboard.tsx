@@ -126,51 +126,53 @@ const Dashboard: React.FC = () => {
   );
 
   return (
-    <div className="space-y-10 pb-12">
+    <div className="space-y-10 pb-12 animate-in fade-in slide-in-from-bottom-4 duration-700">
       <ApiKeyBanner onKeySaved={fetchDashboardData} />
 
       {/* Hero Command Banner */}
-      <header className="relative overflow-hidden bg-gradient-to-br from-indigo-600 via-violet-600 to-indigo-800 rounded-[3rem] p-8 md:p-12 text-white shadow-2xl shadow-indigo-500/20">
-        <Sparkles className="absolute -right-10 -top-10 opacity-20 rotate-12 pointer-events-none" size={260} />
+      <header className="relative overflow-hidden bg-slate-900 rounded-3xl md:rounded-[3rem] p-6 md:p-12 text-white shadow-2xl border border-slate-800 group">
+        <div className="absolute inset-0 bg-gradient-to-br from-indigo-600/20 via-violet-600/20 to-transparent opacity-50 group-hover:opacity-80 transition-opacity duration-700" />
+        <Sparkles className="absolute -right-20 -top-20 md:-right-10 md:-top-10 text-indigo-500/10 rotate-12 pointer-events-none group-hover:text-indigo-500/20 transition-colors duration-700 w-64 h-64 md:w-[260px] md:h-[260px]" />
         
         <div className="relative z-10 flex flex-col lg:flex-row lg:items-center justify-between gap-8">
-          <div className="space-y-4 max-w-2xl">
-            <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-white/10 border border-white/20 text-[10px] font-black uppercase tracking-[0.2em]">
-              <ShieldCheck size={12} className="text-emerald-300" /> {strings.dashboard.hero.badge} • {stats.streak}{strings.dashboard.hero.streakSuffix}
+          <div className="space-y-4 md:space-y-6 max-w-2xl">
+            <div className="inline-flex items-center gap-2 px-3 md:px-4 py-1 md:py-1.5 rounded-full bg-indigo-500/10 border border-indigo-500/20 text-[8px] md:text-[10px] font-black uppercase tracking-[0.3em] text-indigo-400">
+              <ShieldCheck size={10} className="text-emerald-400 md:w-3 md:h-3" /> {strings.dashboard.hero.badge} • {stats.streak}{strings.dashboard.hero.streakSuffix}
             </div>
             
-            <h1 className="text-4xl md:text-6xl font-black tracking-tight leading-tight">
+            <h1 className="text-3xl md:text-7xl font-black tracking-tighter leading-[1] md:leading-[0.9] neon-text-indigo">
               {greeting()}, <br />
-              <span className="text-indigo-200">
+              <span className="text-indigo-400 bg-clip-text text-transparent bg-gradient-to-r from-indigo-400 to-purple-400">
                 {localStorage.getItem('user_profile_name') || user?.displayName?.split(' ')[0] || strings.dashboard.hero.fallbackName}
               </span>
             </h1>
             
-            <p className="text-indigo-100/90 font-medium text-sm md:text-base leading-relaxed">
-              {strings.dashboard.hero.descriptionPrefix}<span className="font-black text-white">{stats.entries}</span>{strings.dashboard.hero.descriptionSuffix}
+            <p className="text-slate-400 font-medium text-sm md:text-lg leading-relaxed max-w-xl">
+              {strings.dashboard.hero.descriptionPrefix}<span className="font-black text-white px-2 py-0.5 bg-indigo-500/20 rounded-md mx-1">{stats.entries}</span>{strings.dashboard.hero.descriptionSuffix}
             </p>
 
-            <div className="pt-2 flex flex-wrap gap-3">
-              <Link to="/journal/new" className="shimmer-btn bg-white text-indigo-600 px-7 py-3.5 rounded-2xl font-black text-xs uppercase tracking-widest shadow-xl hover:scale-105 transition-all flex items-center gap-2">
-                <Plus size={18} strokeWidth={3} /> {strings.dashboard.hero.ctaReflection}
+            <div className="pt-2 md:pt-4 flex flex-col sm:flex-row gap-3 md:gap-4">
+              <Link to="/journal/new" className="shimmer-btn bg-indigo-600 text-white px-6 md:px-8 py-3 md:py-4 rounded-xl md:rounded-2xl font-black text-[10px] md:text-xs uppercase tracking-[0.2em] shadow-[0_0_20px_rgba(79,70,229,0.4)] hover:scale-105 active:scale-95 transition-all flex items-center justify-center gap-2">
+                <Plus size={16} strokeWidth={3} /> {strings.dashboard.hero.ctaReflection}
               </Link>
-              <Link to="/chat" className="bg-indigo-500/30 backdrop-blur-md border border-white/20 text-white px-7 py-3.5 rounded-2xl font-black text-xs uppercase tracking-widest hover:bg-indigo-500/50 transition-all flex items-center gap-2">
-                <MessageSquare size={18} /> {strings.dashboard.hero.ctaChat}
+              <Link to="/chat" className="bg-slate-800/50 backdrop-blur-md border border-slate-700 text-slate-200 px-6 md:px-8 py-3 md:py-4 rounded-xl md:rounded-2xl font-black text-[10px] md:text-xs uppercase tracking-[0.2em] hover:bg-slate-800 hover:text-white transition-all flex items-center justify-center gap-2 active:scale-95">
+                <MessageSquare size={16} /> {strings.dashboard.hero.ctaChat}
               </Link>
             </div>
           </div>
 
           {/* Interactive Streak & Growth Level Badge */}
-          <div className="bg-white/10 backdrop-blur-xl border border-white/20 p-6 rounded-[2.5rem] flex flex-col items-center justify-center text-center min-w-[220px] space-y-3 shadow-xl">
-            <div className="w-16 h-16 rounded-2xl bg-amber-400/20 border border-amber-400/30 flex items-center justify-center text-amber-300 shadow-inner">
-              <Flame size={32} className="animate-pulse" />
+          <div className="bg-slate-800/30 backdrop-blur-xl border border-indigo-500/20 p-6 md:p-8 rounded-[2rem] md:rounded-[3rem] flex flex-row lg:flex-col items-center justify-between lg:justify-center text-center lg:min-w-[260px] gap-4 shadow-2xl relative overflow-hidden group/streak">
+            <div className="absolute inset-0 bg-gradient-to-tr from-amber-500/5 to-transparent pointer-events-none" />
+            <div className="w-14 h-14 md:w-20 md:h-20 rounded-xl md:rounded-[2rem] bg-amber-400/10 border border-amber-400/20 flex items-center justify-center text-amber-400 shadow-[0_0_20px_rgba(251,191,36,0.1)] group-hover/streak:scale-110 transition-transform duration-500">
+              <Flame size={28} className="animate-pulse md:w-10 md:h-10" />
             </div>
-            <div>
-              <p className="text-3xl font-black">{stats.streak} {strings.dashboard.hero.streakUnit}</p>
-              <p className="text-[10px] font-black uppercase tracking-widest text-indigo-200">{strings.dashboard.hero.streakLabel}</p>
+            <div className="flex-1 lg:flex-none text-left lg:text-center">
+              <p className="text-2xl md:text-4xl font-black tracking-tighter text-white">{stats.streak} {strings.dashboard.hero.streakUnit}</p>
+              <p className="text-[8px] md:text-[10px] font-black uppercase tracking-[0.3em] text-indigo-400 mt-0.5 md:mt-1">{strings.dashboard.hero.streakLabel}</p>
             </div>
-            <div className="w-full bg-white/20 h-2 rounded-full overflow-hidden">
-              <div className="bg-amber-400 h-full rounded-full" style={{ width: `${Math.min(stats.streak * 15, 100)}%` }} />
+            <div className="hidden sm:block w-32 lg:w-full bg-slate-700/50 h-2 md:h-2.5 rounded-full overflow-hidden p-0.5 border border-slate-700">
+              <div className="bg-gradient-to-r from-amber-500 to-orange-500 h-full rounded-full shadow-[0_0_10px_rgba(245,158,11,0.5)]" style={{ width: `${Math.min(stats.streak * 15, 100)}%` }} />
             </div>
           </div>
         </div>
@@ -354,13 +356,13 @@ const StatCard = ({ icon, label, value, trend, color }: any) => {
   };
 
   return (
-    <div className="bg-white dark:bg-slate-900/60 border border-slate-200 dark:border-slate-800/80 p-7 rounded-[2.5rem] hover:shadow-2xl transition-all group glow-card">
-      <div className={`w-12 h-12 bg-gradient-to-br ${colors[color]} rounded-2xl flex items-center justify-center text-white mb-5 shadow-lg group-hover:scale-110 transition-transform duration-300`}>
+    <div className="bento-item glow-card group p-7">
+      <div className={`w-12 h-12 bg-gradient-to-br ${colors[color]} rounded-2xl flex items-center justify-center text-white mb-5 shadow-lg group-hover:scale-110 group-hover:rotate-3 transition-transform duration-500`}>
         {React.cloneElement(icon as React.ReactElement, { size: 22, strokeWidth: 2.5 })}
       </div>
       <div>
-        <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">{label}</p>
-        <p className="text-3xl font-black text-slate-900 dark:text-white mb-1.5">{value}</p>
+        <p className="text-[10px] font-black text-slate-400 dark:text-indigo-400/60 uppercase tracking-[0.2em] mb-1">{label}</p>
+        <p className="text-3xl font-black text-slate-900 dark:text-white mb-1.5 tracking-tighter">{value}</p>
         <p className="text-[10px] font-bold text-slate-500 dark:text-slate-400 flex items-center gap-1">
           <Zap size={10} className="text-amber-500" /> {trend}
         </p>
@@ -370,8 +372,8 @@ const StatCard = ({ icon, label, value, trend, color }: any) => {
 };
 
 const ToolButton = ({ to, icon, label, description, color }: any) => (
-  <Link to={to} className="flex items-center gap-4 p-4 bg-white dark:bg-slate-900/60 border border-slate-200 dark:border-slate-800/80 rounded-2xl hover:border-indigo-500/50 transition-all group shadow-sm">
-    <div className={`w-11 h-11 ${color} rounded-xl flex items-center justify-center text-white shadow-md group-hover:scale-105 transition-transform flex-shrink-0`}>
+  <Link to={to} className="flex items-center gap-4 p-4 bg-white/50 dark:bg-slate-900/40 backdrop-blur-xl border border-slate-200 dark:border-slate-800/50 rounded-2xl hover:border-indigo-500/50 transition-all group shadow-sm hover:shadow-xl hover:shadow-indigo-500/5">
+    <div className={`w-11 h-11 ${color} rounded-xl flex items-center justify-center text-white shadow-md group-hover:scale-110 group-hover:-rotate-3 transition-transform flex-shrink-0`}>
       {React.cloneElement(icon as React.ReactElement, { size: 20, strokeWidth: 2.5 })}
     </div>
     <div className="flex-1 min-w-0">

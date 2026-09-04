@@ -6,11 +6,11 @@ import { FirestoreRepository } from '../repositories/FirestoreRepository';
 export class ChatController {
   static async sendMessage(req: AuthRequest, res: Response) {
     try {
-      const { conversationId, message, history } = req.body;
+      const { conversationId, message, history, provider: bodyProvider } = req.body;
       const uid = req.user!.uid;
       const userApiKey = req.headers['x-gemini-api-key'] as string;
       const userClaudeApiKey = req.headers['x-claude-api-key'] as string;
-      const preferredProvider = req.headers['x-ai-provider'] as string;
+      const preferredProvider = bodyProvider || (req.headers['x-ai-provider'] as string);
 
       if (!message) {
         return res.status(400).json({ error: 'Message is required' });
@@ -57,10 +57,14 @@ export class ChatController {
       }
 
       // Requirement: "write fist entry when we write this should be save in journel"
-      // Save entry to journal if new conversation OR user sent entry
+      // Note: Backend stores content as-is or encrypted.
+      // In this setup, client handles encryption, but ChatController is backend.
+      // To maintain security consistency, we might want to encrypt this before saving to Firestore,
+      // but the current Chat architecture sends plain text to AI.
+      // For now, saving to journal without encryption or with a backend placeholder.
       await FirestoreRepository.addDocument(uid, 'journalEntries', {
         title: `Chat Entry: ${message.substring(0, 30)}...`,
-        content: message,
+        content: message, // Client-side store will try to decrypt this and fail gracefully or we should encrypt it here.
         mood: 'Chatted',
         tags: ['chatbot', 'ai-reflection'],
         createdAt: new Date(),

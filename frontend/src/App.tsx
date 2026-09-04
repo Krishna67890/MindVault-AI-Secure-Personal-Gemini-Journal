@@ -3,6 +3,7 @@ import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-d
 import { useAuth } from './contexts/AuthContext';
 import { ThemeProvider } from './contexts/ThemeContext';
 import Layout from './components/Layout';
+import { strings } from './config/strings';
 import Landing from './pages/Landing';
 import Login from './pages/Login';
 import Dashboard from './pages/Dashboard';
@@ -19,7 +20,7 @@ import Profile from './pages/Profile';
 const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
   const { user, loading } = useAuth();
 
-  if (loading) return <div className="flex items-center justify-center h-screen bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-white font-bold">Loading Vault...</div>;
+  if (loading) return <div className="flex items-center justify-center h-screen bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-white font-bold">{strings.common.loading}</div>;
   if (!user) return <Navigate to="/login" />;
 
   return <>{children}</>;

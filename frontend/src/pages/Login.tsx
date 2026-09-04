@@ -11,7 +11,7 @@ const Login: React.FC = () => {
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
 
-  const { signInWithGoogle } = useAuth();
+  const { signInWithGoogle, signInWithEmail, signUpWithEmail } = useAuth();
   const navigate = useNavigate();
 
   const handleGoogleSignIn = async () => {
@@ -30,7 +30,26 @@ const Login: React.FC = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setError(strings.login.errors.restricted);
+    if (!email.trim() || !password.trim()) {
+      setError('Please enter your email and password.');
+      return;
+    }
+
+    try {
+      setError('');
+      setLoading(true);
+      if (isLogin) {
+        await signInWithEmail(email, password);
+      } else {
+        await signUpWithEmail(email, password);
+      }
+      navigate('/dashboard');
+    } catch (err: any) {
+      console.error('Authentication Error:', err);
+      setError(err?.message || 'Authentication failed. Please check your credentials.');
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (

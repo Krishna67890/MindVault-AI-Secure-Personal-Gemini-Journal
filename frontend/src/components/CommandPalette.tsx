@@ -20,6 +20,8 @@ import {
 import { JournalStore, JournalEntry } from '../services/journalStore';
 import { useTheme } from '../contexts/ThemeContext';
 
+import { strings } from '../config/strings';
+
 interface CommandPaletteProps {
   isOpen: boolean;
   onClose: () => void;
@@ -30,6 +32,8 @@ const CommandPalette: React.FC<CommandPaletteProps> = ({ isOpen, onClose }) => {
   const [entries, setEntries] = useState<JournalEntry[]>([]);
   const navigate = useNavigate();
   const { theme, toggleTheme } = useTheme();
+
+  const s = strings.commandPalette;
 
   useEffect(() => {
     if (isOpen) {
@@ -59,13 +63,18 @@ const CommandPalette: React.FC<CommandPaletteProps> = ({ isOpen, onClose }) => {
   if (!isOpen) return null;
 
   const quickActions = [
-    { icon: Plus, label: 'Create New Reflection', action: () => navigate('/journal/new'), category: 'Action' },
-    { icon: MessageSquare, label: 'Start AI Neural Chat', action: () => navigate('/chat'), category: 'Action' },
-    { icon: TrendingUp, label: 'View Neural Insights', action: () => navigate('/insights'), category: 'Navigation' },
-    { icon: Calendar, label: 'Generate Weekly Report', action: () => navigate('/weekly-reflection'), category: 'Navigation' },
-    { icon: theme === 'dark' ? Sun : Moon, label: `Switch to ${theme === 'dark' ? 'Light' : 'Dark'} Mode`, action: () => toggleTheme(), category: 'Theme' },
-    { icon: Settings, label: 'Open System Settings', action: () => navigate('/settings'), category: 'Navigation' },
-    { icon: User, label: 'View Profile & Logo', action: () => navigate('/profile'), category: 'Navigation' },
+    { icon: Plus, label: s.actions.newJournal, action: () => navigate('/journal/new'), category: s.categories.action },
+    { icon: MessageSquare, label: s.actions.chat, action: () => navigate('/chat'), category: s.categories.action },
+    { icon: TrendingUp, label: s.actions.insights, action: () => navigate('/insights'), category: s.categories.navigation },
+    { icon: Calendar, label: s.actions.weekly, action: () => navigate('/weekly-reflection'), category: s.categories.navigation },
+    {
+      icon: theme === 'dark' ? Sun : Moon,
+      label: theme === 'dark' ? s.actions.theme.light : s.actions.theme.dark,
+      action: () => toggleTheme(),
+      category: s.categories.theme
+    },
+    { icon: Settings, label: s.actions.settings, action: () => navigate('/settings'), category: s.categories.navigation },
+    { icon: User, label: s.actions.profile, action: () => navigate('/profile'), category: s.categories.navigation },
   ];
 
   const filteredEntries = entries.filter(e =>
@@ -98,13 +107,13 @@ const CommandPalette: React.FC<CommandPaletteProps> = ({ isOpen, onClose }) => {
             type="text"
             value={query}
             onChange={(e) => setQuery(e.target.value)}
-            placeholder="Type a command, search entries, or jump to..."
+            placeholder={s.placeholder}
             className="w-full bg-transparent border-none text-slate-900 dark:text-white placeholder-slate-400 font-medium focus:outline-none focus:ring-0 text-base"
             autoFocus
           />
           <div className="flex items-center gap-2">
             <kbd className="hidden sm:inline-flex items-center gap-1 px-2.5 py-1 bg-slate-200 dark:bg-slate-800 text-slate-500 dark:text-slate-400 rounded-lg text-[10px] font-mono font-bold">
-              ESC
+              {s.kbdLabel}
             </kbd>
             <button
               onClick={onClose}
@@ -122,7 +131,7 @@ const CommandPalette: React.FC<CommandPaletteProps> = ({ isOpen, onClose }) => {
           {filteredActions.length > 0 && (
             <div className="space-y-2">
               <div className="px-3 text-[10px] font-black uppercase tracking-widest text-slate-400 dark:text-slate-500 flex items-center gap-2">
-                <Command size={12} /> Commands & Navigation
+                <Command size={12} /> {s.sections.commands}
               </div>
               <div className="space-y-1">
                 {filteredActions.map((act, idx) => {
@@ -156,11 +165,11 @@ const CommandPalette: React.FC<CommandPaletteProps> = ({ isOpen, onClose }) => {
           {query.trim() && (
             <div className="space-y-2">
               <div className="px-3 text-[10px] font-black uppercase tracking-widest text-slate-400 dark:text-slate-500 flex items-center gap-2">
-                <BookText size={12} /> Matching Reflections ({filteredEntries.length})
+                <BookText size={12} /> {s.sections.matching} ({filteredEntries.length})
               </div>
               {filteredEntries.length === 0 ? (
                 <div className="px-4 py-6 text-center text-xs font-medium text-slate-400">
-                  No encrypted records match "{query}"
+                  {s.entries.noResults} "{query}"
                 </div>
               ) : (
                 <div className="space-y-1">
@@ -176,7 +185,7 @@ const CommandPalette: React.FC<CommandPaletteProps> = ({ isOpen, onClose }) => {
                         </div>
                         <div className="truncate">
                           <p className="text-sm font-bold text-slate-900 dark:text-white truncate group-hover:text-indigo-500 transition-colors">
-                            {entry.title || 'Untitled Thought'}
+                            {entry.title || s.entries.untitled}
                           </p>
                           <p className="text-xs text-slate-400 truncate max-w-md">
                             {entry.content}
@@ -196,11 +205,11 @@ const CommandPalette: React.FC<CommandPaletteProps> = ({ isOpen, onClose }) => {
         <div className="px-6 py-3 bg-slate-50 dark:bg-slate-950/80 border-t border-slate-100 dark:border-slate-800/80 flex items-center justify-between text-[11px] text-slate-400">
           <div className="flex items-center gap-2">
             <Sparkles size={12} className="text-indigo-500" />
-            <span className="font-bold">MindVault Command Engine</span>
+            <span className="font-bold">{s.footer.engine}</span>
           </div>
           <div className="flex items-center gap-1">
             <Shield size={12} className="text-emerald-500" />
-            <span>End-to-End Encrypted</span>
+            <span>{s.footer.encrypted}</span>
           </div>
         </div>
       </div>
